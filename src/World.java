@@ -1,6 +1,16 @@
 /**
  * This class represents the world of a single match.
- * @author Kieran King
+ * @author Kieran
+ */
+/**
+ * The Map class creates a map object which is made up of cells. The map can either be generated
+ * using a premade map pattern or it can be generated with a random pattern.
+ * @author Ralph
+ */
+/**
+ * The World class generates a world object, consisting of a map and two players. 
+ * The match takes place between the two players.
+ * @author Ralph
  */
 public class World {
 	
@@ -10,12 +20,17 @@ public class World {
 	private int[] foodCount; // Note: update class diagram to single array
 	private int round;
 	
-	/**
+	/** Kieran
 	 * Construct a randomly generated world.
 	 */
+	/** Ralph
+	* Generates a World object consisting of a map and two players.
+	* @param player1 First player to participae in the match.
+	* @param player2 Second player to participate in the match.
+	* @param path The path to the map file, if null, random map will be generated.
+	*/
 	World(Player[] players) {
 		generateWorld();
-
 	}
 	
 	/**
@@ -30,19 +45,30 @@ public class World {
 	 * Randomly generate world.
 	 */
 	private void generateWorld() {
-		
+		//map = new Cell[y][x];
+		//for(int i = 0; i<(y-1); i++){
+		//	for(int j = 0; j<(x-1); j++){
+		//			map[i][j] = new Cell();
+		//	}
+		//}
 	}
 	
-	/**
+	/** Kieran
 	 * Load a world from file.
 	 * @param the world file to load
 	 */
+	/** Ralph
+	* Generates a map object using a predefined map layout.
+	* @param path  Path to predefined map layout file.
+	*/
 	private void loadWorld(String worldPath) {
-		// Note: Update parameter in class diagram
-		READ FILE
-		VERIFY FILE
-			RETURN ERROR 
-		LOAD 
+		//x = "";
+		//y = "";
+		//for(int i = 0; i<(y-1); i++){
+		//	for(int j = 0; j<(x-1); j++){
+		//		
+		//	}
+		//}
 	}
 	
 	/**
@@ -59,6 +85,22 @@ public class World {
 	 */
 	public void decrementAntCount(Player player) {
 		antCount[player.getId()]--;
+	}
+	
+	
+	/** Ralph
+	* Increments the amount of rounds completed by one.
+	*/
+	public void incrementRoundCount(){
+		this.round++;
+	}
+	
+	/** Ralph
+	* Gets the amount of rounds that have been complete.
+	* @return Returns the amount of rounds that have been completed.
+	*/
+	public int getRoundCount(){
+		return this.round;
 	}
 	
 	/**
@@ -206,5 +248,15 @@ public class World {
 	 */
 	public void moveAnt(Ant ant) {
 		
+	}
+	
+	/** Ralph
+	* Gets the cell with the given x,y-coordinates.
+	* @param x  X-Coordinate of the cell.
+	* @param y  Y-Coordinate of the cell.
+	* @return Returns the cell at position x,y in the map.
+	*/
+	public Cell getCell(Position position) {
+		return cells[position.getX()][position.getY()];
 	}
 }
