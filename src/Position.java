@@ -12,7 +12,7 @@ public class Position {
 	 * @param the x position
 	 * @param the y position
 	 */
-	Position(int x, int y) throws Exception{
+	Position(int x, int y) throws Exception {
 		if (x<0) {
             throw new Exception("Position X must not be negative!");
         } else {

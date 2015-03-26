@@ -61,8 +61,6 @@ public class Cell {
 	 * @return the state of the specified chemical marker
 	 */
 	public boolean getMarker(Player player, int chemical) {
-		// Note: Update returned type on class diagram
-		// Note: Removed chemical marker from class diagram
 		return chemicalMarkers[player.getId()][chemical];
 	}
 	

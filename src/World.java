@@ -5,7 +5,7 @@
 public class World {
 	
 	private Cell[][] cells;
-	private Ant[][] ants;
+	private Ant[] ants;
 	private int[] antCount; // Note: update class diagram to single array
 	private int[] foodCount; // Note: update class diagram to single array
 	private int round;
@@ -15,6 +15,7 @@ public class World {
 	 */
 	World(Player[] players) {
 		generateWorld();
+
 	}
 	
 	/**
@@ -38,6 +39,10 @@ public class World {
 	 */
 	private void loadWorld(String worldPath) {
 		// Note: Update parameter in class diagram
+		READ FILE
+		VERIFY FILE
+			RETURN ERROR 
+		LOAD 
 	}
 	
 	/**

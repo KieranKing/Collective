@@ -16,7 +16,6 @@ public class Player {
 	 * @param the path of the brain file
 	 */
 	Player(int id, String name, String brainPath) {
-		// Note: Update class diagrams to include name, and path.
 		// Note: brainPath "null" should load a default brain for testing purposes
 		this.id = id;
 		this.name = name;
@@ -45,7 +44,6 @@ public class Player {
 	 * @return the colour
 	 */
 	public Colour getColour() {
-		// Note: Update returned variable in class diagram here
 		return colour;
 	}
 	
@@ -54,7 +52,6 @@ public class Player {
 	 * @return the colour
 	 */
 	public void setColour(Colour colour) {
-		// Note: Update returned variable in class diagram here
 		this.colour = colour;
 	}
 	

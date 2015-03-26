@@ -8,8 +8,6 @@ public class GameEngine {
 	 * Constructer.
 	 */
 	GameEngine() {
-		// Note: Change the constructor name in class diagram
-		// Note: Remove players array from class diagram
 	}
 
 	/**

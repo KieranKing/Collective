@@ -9,14 +9,13 @@ public class Ant {
 	private int restingTurns;
 	private int direction;
 	private boolean hasFood;
-	private Cell cellWithAnt;
+	private Cell cell;
 	
 	/**
 	 * Construct an ant that belongs to a specified player.
 	 * @param the player that owns this ant
 	 */
 	Ant(Player player) {
-		//Note: Remove parameter from class diagram
 	}
 	
 	/**
@@ -97,14 +96,14 @@ public class Ant {
 	 * @param the cell where this ant is located
 	 */
 	public void setCell(Cell cell) {
-		cellWithAnt = cell;
+		this.cell = cell;
 	}
 	
 	/** Get the cell where this ant is located.
 	 * @return the cell where this ant is located
 	 */
 	public Cell getCell() {
-		return cellWithAnt;
+		return cell;
 	}
 	
 }

@@ -19,4 +19,12 @@ public class GUI {
 		
 	}
 	
+	private void verifyWorld() {
+		
+	}
+	
+	private void verifyBrain() {
+		
+	}
+	
 }

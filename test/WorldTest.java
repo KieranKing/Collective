@@ -59,7 +59,7 @@ public class WorldTest {
 		boolean rocky = world.getRocky(new Position(0, 0));
 		// Set the rocky state of cell (0, 0) to the opposite of what it was.
 		world.setRocky(new Position(0, 0), !rocky);
-		// Confirm the rocky state of cel (0, 0) has updated.
+		// Confirm the rocky state of cell (0, 0) has updated.
 		assertNotEquals(world.getRocky(new Position(0, 0)), rocky);
 	}
 
