@@ -1,13 +1,14 @@
+/**
+ * This class represents the world of a single match.
+ *
+ * @author Ben Jackson, Kieran King
+ */
+package antproject.src;
 
-import antproject.src.Ant;
-import antproject.src.Cell;
-import antproject.src.Player;
-import antproject.src.Position;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Random;
-
 
 public class World {
 
@@ -716,6 +717,7 @@ public class World {
                     notdec.setFood(false);
                     notdec.setRestingTurns(0);
                     notdec.setState(0);
+                    notdec.setId(antCount[0] + antCount[1]);
                     antCount[0]++;
                     ants[antCount[0] + antCount[1]] = notdec;
                 }
@@ -727,6 +729,7 @@ public class World {
                     notdec.setFood(false);
                     notdec.setRestingTurns(0);
                     notdec.setState(0);
+                    notdec.setId(antCount[0] + antCount[1]);
                     antCount[1]++;
                     ants[antCount[0] + antCount[1]] = notdec;
                 }
@@ -832,6 +835,9 @@ public class World {
                     notdec.setFood(false);
                     notdec.setRestingTurns(0);
                     notdec.setState(0);
+                    notdec.setId(antCount[0] + antCount[1]);
+                    antCount[0]++;
+                    ants[antCount[0] + antCount[1]] = notdec;
                 }
                 if (cells[x][y].getAnthill() == players[1]) {
                     Ant notdec = new Ant(players[1]);
@@ -841,8 +847,12 @@ public class World {
                     notdec.setFood(false);
                     notdec.setRestingTurns(0);
                     notdec.setState(0);
+                    notdec.setId(antCount[0] + antCount[1]);
+                    antCount[1]++;
+                    ants[antCount[0] + antCount[1]] = notdec;
                 }
             }
+
         }
     }
 
@@ -904,6 +914,8 @@ public class World {
      */
     public void setAntAt(Ant ant, Position position) {
         cells[position.getX()][position.getY()].setAnt(ant);
+        ant.setCell(cells[position.getX()][position.getY()]);
+
     }
 
     /**
@@ -936,18 +948,19 @@ public class World {
      */
     public void killAntAt(Position position) {
         //drop held food
-        if(cells[position.getX()][position.getY()].getAnt().getFood()){
+        if (cells[position.getX()][position.getY()].getAnt().getFood()) {
             cells[position.getX()][position.getY()].setFoodCount(cells[position.getX()][position.getY()].getFoodCount() + 1);
         }
-        
+
         //kill ant
+        ants[cells[position.getX()][position.getY()].getAnt().getId()] = null;
         cells[position.getX()][position.getY()].setAnt(null);
-        
+
         //drop body food
         cells[position.getX()][position.getY()].setFoodCount(cells[position.getX()][position.getY()].getFoodCount() + 3);
-        
+
         //make sure food not above 9
-        if (cells[position.getX()][position.getY()].getFoodCount() > 9){
+        if (cells[position.getX()][position.getY()].getFoodCount() > 9) {
             cells[position.getX()][position.getY()].setFoodCount(9);
         }
     }

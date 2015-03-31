@@ -114,15 +114,18 @@ public class WorldTest {
         // Initialise testing objects.
         Player[] players = {new Player(0, "red", null), new Player(1, "black", null)};
         World world = new World(players);
-        Ant ant = new Ant(players[0]);
+
         // Set the specified ant to be located at cell (0, 0).
-        world.setAntAt(ant, new Position(0, 0));
+        world.setAntAt(world.getAnts()[1], new Position(0, 0));
         // Confirm this ant is alive.
-        assertTrue(world.antIsAlive(254));
+        assertTrue(world.antIsAlive(1));
+        assertEquals(world.getAnts()[1].getCell().getPosition().getX(), 0);
+        assertEquals(world.getAnts()[1].getCell().getPosition().getY(), 0);
         // Kill the ant located at cell (0, 0).
         world.killAntAt(new Position(0, 0));
         // Confirm the ant has been killed.
-        assertTrue(!world.antIsAlive(254));
+        assertEquals(world.getCells()[0][0].getFoodCount(), 3);
+        assertTrue(!world.antIsAlive(world.getAnts()[1].getId()));
     }
 
     @Test
@@ -212,11 +215,11 @@ public class WorldTest {
         // Load a world from file.
         Player[] players = {new Player(0, "red", null), new Player(1, "black", null)};
         World world = new World(players, "C:\\Users\\ben81_000\\Documents\\softeng\\1.world");
+        Ant a = world.getCells()[77][52].getAnt();
         world.getCells()[77][52].getAnt().setDirection(0);
         world.moveAnt(world.getCells()[77][52].getAnt());
-        assertEquals(world.getAnts()[7].getCell().getPosition().getX(), 78);
-        
-        
+        assertEquals(a.getCell().getPosition().getX(), 78);
+
     }
 
 }
