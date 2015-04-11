@@ -106,8 +106,8 @@ public class Player {
 	/**
 	 * Get the next instruction of the ant brain.
 	 *
-	 * @param the current ant brain state
-	 * @return the next instruction given the current ant brain state
+	 * @param state The current ant brain state as an integer.
+	 * @return Retruns the next instruction to be given to the ant.
 	 */
 	public Instruction getNextInstruction(int state) {
 		return null;
@@ -116,7 +116,7 @@ public class Player {
 	/**
 	 * Generates a list of instructions from the specified brain file and returns the list.
 	 *
-	 * @param The file path leading to the antbrain file.
+	 * @param brainPath The file path leading to the ant brain file.
 	 * @return Returns an array of Instruction objects.
 	 */
 	private Instruction[] loadBrain(String brainPath) throws LexicalException, SyntaxException, FileNotFoundException, IOException {
