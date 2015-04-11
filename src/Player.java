@@ -217,7 +217,7 @@ public class Player {
 			} else if (word.matches("[0-9]+")) {
 				tokenList.add(new Integer(word));
 			} else {
-				throw new LexicalException("Invalid token: " + word);
+				throw new LexicalException("Invalid token: " + word.toString());
 			}
 		}
 
@@ -226,7 +226,7 @@ public class Player {
 		Instruction[] instructions = new Instruction[tokenlist.size()];
 		for (int z = 0; z < tokenList.size(); z++) {
 			Object token = tokenList.get(z);
-			if (tokenList.get(z) instanceof Action) {
+			if (tokenList.get(z) instanceof Enum<Action>) {
 				if(token.equals(Action.SENSE)){
 					int[] param = new int[4];
 					param[0] = recurseSenseDir(tokenList, z);
@@ -313,7 +313,7 @@ public class Player {
 	private int recurseSenseDir(ArrayList<Object> tokens, int index) throws SyntaxException {
 		int param = 0;
 		Object token = tokens.get(index);
-		if (token instanceof sensedir) {
+		if (token instanceof Enum<sensedir>) {
 			if(token.equals(sensedir.Here)) {
 				param = 0;
 			}
@@ -344,7 +344,7 @@ public class Player {
 	private int recurseCond(ArrayList<Object> tokens, int index) throws SyntaxException {
 		int param = 0;
 		Object token = tokens.get(index);
-		if (token instanceof cond) {
+		if (token instanceof Enum<cond>) {
 			if(token.equals(cond.Friend)){
 				param = 0;
 			}
@@ -392,7 +392,7 @@ public class Player {
 	private int recurseLr(ArrayList<Object> tokens, int index) throws SyntaxException {
 		int param = 0;
 		Object token = tokens.get(index);
-		if (token instanceof lr) {
+		if (token instanceof Enum<lr>) {
 			if(token.equals(lr.Left)){
 				param = 0;
 			}
@@ -417,7 +417,7 @@ public class Player {
 		int param = 0;
 		Object token = tokens.get(index);
 		if (token instanceof Integer) {
-			param = (int) token;
+			param = (Integer) token;
 		}
 		else{
 			//throw error if syntax is faulty.
@@ -434,7 +434,7 @@ public class Player {
 	 */
 	private boolean isKeyWord(char c) {
 		String s = "";
-		s += c;
+		s = c.toString();
 		if (s.matches("[a-z]|[A-Z]")) {
 			return true;
 		} else {
@@ -450,7 +450,7 @@ public class Player {
 	 */
 	private boolean isInt(char c) {
 		String s = "";
-		s += c;
+		s += c.toString();
 		if (s.matches("[0-9]")) {
 			return true;
 		} else {
