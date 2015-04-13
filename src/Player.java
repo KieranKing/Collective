@@ -65,6 +65,14 @@ public class Player {
 	}
 
 	/**
+	 * Gets the player's instruction array.
+	 *
+	 * @return Returns the players brain instructions array.
+	 */
+	public Instruction[] getInstructions(){
+		return instruction;
+	}
+	/**
 	 * Gets the player's unique id.
 	 *
 	 * @return Returns the players unique id.
