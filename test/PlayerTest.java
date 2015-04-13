@@ -80,7 +80,7 @@ public class PlayerTest {
 
 	@Test
 	public void testLoadBrain()throws LexicalException, SyntaxException{
-		Player player = new Player(1, "test", "lexsyntaxtest");
+		Player player = new Player(1, "test", "lexsyntaxtest.txt");
 		Instruction[] i= new Instruction[18];
 
 		int[] int1 = new int[4];
@@ -163,13 +163,13 @@ public class PlayerTest {
 
 	}
 	@Test(expected=Exception.class)
-	public void testLoadBrainLexError("lexerror")throws LexicalException, SyntaxException{
-		Player player = new Player(1, "test", "lexerror");
+	public void testLoadBrainLexError()throws LexicalException, SyntaxException{
+		Player player = new Player(1, "test", "lexerror.txt");
 
 	}
 	@Test(expected=Exception.class)
 	public void testLoadBrainParseError()throws LexicalException, SyntaxException{
-		Player player = new Player(1, "test", "syntaxerror");
+		Player player = new Player(1, "test", "syntaxerror.txt");
 
 	}
 

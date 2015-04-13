@@ -1,4 +1,4 @@
-Sense% Here 1 1 Friend;(SenseDir int int, cond)
+Sense Here 1 1 Friend;(SenseDir int int, cond)
 Sense Ahead 1 1 Foe;(SenseDir int int, cond)
 Sense LeftAhead 1 1 FriendWithFood;(SenseDir int int, cond)
 Sense RightAhead 1 1 FoeWithFood;(SenseDir int int, cond)
