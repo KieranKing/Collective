@@ -783,6 +783,845 @@ public class World {
             }
         }
 
+        //WORLD PARSING
+        System.out.println("Checking world syntax...");
+
+        //read in each cell as string then space
+        FileReader fchecker = new FileReader(worldPath);
+        BufferedReader textchecker = new BufferedReader(fchecker);
+
+        try {
+            int test1 = Integer.parseInt(textchecker.readLine());
+            int test2 = Integer.parseInt(textchecker.readLine());
+        } catch (Exception e) {
+            throw new Exception("Size integers invalid.");
+        }
+
+        //build char array
+        char[][] testmap = new char[SIZE_X][SIZE_Y];
+        for (int y = 0; y < SIZE_Y; y++) {
+            char[] temprow = textchecker.readLine().toCharArray();
+            if (temprow.length > SIZE_X * 2) {
+                throw new Exception("A row is too long: " + (y + 1));
+            }
+            if (temprow.length < SIZE_X * 2) {
+                throw new Exception("A row is too short: " + (y + 1));
+            }
+            for (int x = 0; x < SIZE_X; x++) {
+                testmap[x][y] = temprow[x * 2];
+            }
+        }
+
+        //check no other symbols
+        for (int y = 0; y < SIZE_Y; y++) {
+            for (int x = 0; x < SIZE_X; x++) {
+                if ((testmap[x][y] != '.') && (testmap[x][y] != '#') && (testmap[x][y] != '+') && (testmap[x][y] != '-') && (testmap[x][y] != '5')) {
+                    throw new Exception("Unrecognised symbol at location: " + (x + 1) + "," + (y + 1));
+                }
+            }
+        }
+
+        //check the walls
+        for (int x = 0; x < SIZE_X; x++) {
+            if (testmap[x][0] != '#') {
+                throw new Exception("Top wall error at column: " + (x + 1));
+            }
+            if (testmap[x][SIZE_Y - 1] != '#') {
+                throw new Exception("Bottom wall error at column: " + (x + 1));
+            }
+        }
+        for (int y = 0; y < SIZE_Y; y++) {
+            if (testmap[0][y] != '#') {
+                throw new Exception("Left wall error at row: " + (y + 1));
+            }
+            if (testmap[SIZE_X - 1][y] != '#') {
+                throw new Exception("Right wall error at row: " + (y + 1));
+            }
+        }
+
+        //finding the rocks
+        int rockcount = 0;
+        for (int y = 1; y < SIZE_Y - 1; y++) {
+            for (int x = 1; x < SIZE_X - 1; x++) {
+                if (testmap[x][y] == '#') {
+                    if (y % 2 == 0) {
+                        //even row
+                        if (((testmap[x - 1][y] == '.') || (x == 1)) && ((testmap[x + 1][y] == '.') || (x == SIZE_X - 2)) && ((testmap[x][y - 1] == '.') || (y == 1)) && ((testmap[x][y + 1] == '.') || (y == SIZE_Y - 2)) && ((testmap[x - 1][y - 1] == '.') || ((y == 1) && (x == 1))) && (((testmap[x - 1][y + 1] == '.') || ((y == SIZE_Y - 2) && (x == 1))))) {
+                            rockcount++;
+                        } else {
+                            throw new Exception("Rock found in incorrect place: " + x + "," + y);
+                        }
+                    } else {
+                        //odd row
+                        if (((testmap[x - 1][y] == '.') || (x == 1)) && ((testmap[x + 1][y] == '.') || (x == SIZE_X - 2)) && ((testmap[x][y - 1] == '.') || (y == 1)) && ((testmap[x][y + 1] == '.') || (y == SIZE_Y - 2)) && ((testmap[x + 1][y - 1] == '.') || ((y == 1) && (x == SIZE_X - 2))) && (((testmap[x + 1][y + 1] == '.') || ((y == SIZE_Y - 2) && (x == SIZE_X - 2))))) {
+                            rockcount++;
+                        } else {
+                            throw new Exception("Rock found in incorrect place: " + x + "," + y);
+                        }
+                    }
+                }
+            }
+        }
+
+        if (rockcount < 14) {
+            throw new Exception("Not enough rocks in world. 14 Required.");
+        }
+
+        if (rockcount > 14) {
+            throw new Exception("Too many rocks in world. 14 Required.");
+        }
+
+        //foodblobs
+        int foodblobcount = 0;
+
+        //skipping in blob cells already considered
+        boolean[][] skipfood = new boolean[SIZE_X][SIZE_Y];
+        for (int y = 0; y < SIZE_Y; y++) {
+            for (int x = 0; x < SIZE_X; x++) {
+                skipfood[x][y] = false;
+            }
+        }
+
+        for (int y = 0; y < SIZE_Y; y++) {
+            for (int x = 0; x < SIZE_X; x++) {
+                if (testmap[x][y] == '5') {
+                    if (!skipfood[x][y]) {
+                        if (y % 2 == 0) {
+                            //even blobs
+                            if (((y + 2) < SIZE_Y - 2)) {
+                                //right slant
+                                if (testmap[x][y + 2] == '.') {
+                                    if (((x + 6) < SIZE_X - 2) && ((y + 5) < SIZE_Y - 2) && ((x - 1) > 0)) {
+                                        for (int y1 = y; y1 < y + 2; y1++) {
+                                            for (int x1 = x; x1 < x + 5; x1++) {
+                                                if (testmap[x1][y1] != '5') {
+                                                    throw new Exception("Incorrectly formatted foodblob at: " + (x1 + 1) + "," + (y1 + 1));
+                                                }
+                                                skipfood[x1][y1] = true;
+                                            }
+                                        }
+
+                                        for (int y2 = y + 2; y2 < y + 4; y2++) {
+                                            for (int x2 = x + 1; x2 < x + 6; x2++) {
+
+                                                if (testmap[x2][y2] != '5') {
+                                                    throw new Exception("Incorrectly formatted foodblob at: " + (x2 + 1) + "," + (y2 + 1));
+                                                }
+                                                skipfood[x2][y2] = true;
+                                            }
+                                        }
+
+                                        for (int x3 = x + 2; x3 < x + 7; x3++) {
+
+                                            if (testmap[x3][y + 4] != '5') {
+                                                throw new Exception("Incorrectly formatted foodblob at: " + (x3 + 1) + "," + (y + 5));
+                                            }
+                                            skipfood[x3][y + 4] = true;
+                                        }
+
+                                        //adjacency
+                                        if (((x + 7) < SIZE_X - 2) && ((y + 5) < SIZE_Y - 2) && ((x - 1) > 0) && ((y - 1) > 0)) {
+
+                                            for (int x4 = x - 1; x4 < x + 6; x4++) {
+                                                if (testmap[x4][y - 1] != '.' && testmap[x4][y - 1] != '#') {
+                                                    throw new Exception("Incorrect foodblob adjacency at: " + (x4 + 1) + "," + y);
+                                                }
+                                            }
+
+                                            for (int x5 = x + 1; x5 < x + 7; x5++) {
+                                                if (testmap[x5][y + 5] != '.' && testmap[x5][y + 5] != '#') {
+                                                    throw new Exception("Incorrect foodblob adjacency at: " + (x5 + 1) + "," + (y + 6));
+                                                }
+                                            }
+
+                                            for (int y4 = y; y4 < y + 3; y4++) {
+                                                if (testmap[x - 1][y4] != '.' && testmap[x - 1][y4] != '#') {
+                                                    throw new Exception("Incorrect foodblob adjacency at: " + x + "," + (y4 + 1));
+                                                }
+                                            }
+
+                                            for (int y5 = y + 2; y5 < y + 5; y5++) {
+                                                if (testmap[x][y5] != '.' && testmap[x][y5] != '#') {
+                                                    throw new Exception("Incorrect foodblob adjacency at: " + (x + 1) + "," + (y5 + 1));
+                                                }
+                                            }
+
+                                            if (testmap[x + 1][y + 4] != '.' && testmap[x + 1][y + 4] != '#') {
+                                                throw new Exception("Incorrect foodblob adjacency at: " + (x + 2) + "," + (y + 5));
+                                            }
+
+                                            for (int y6 = y; y6 < y + 2; y6++) {
+                                                if (testmap[x + 5][y6] != '.' && testmap[x + 5][y6] != '#') {
+                                                    throw new Exception("Incorrect foodblob adjacency at: " + (x + 6) + "," + (y6 + 1));
+                                                }
+                                            }
+
+                                            for (int y7 = y + 1; y7 < y + 4; y7++) {
+                                                if (testmap[x + 6][y7] != '.' && testmap[x + 6][y7] != '#') {
+                                                    throw new Exception("Incorrect foodblob adjacency at: " + (x + 7) + "," + (y7 + 1));
+                                                }
+                                            }
+
+                                            for (int y8 = y + 3; y8 < y + 5; y8++) {
+                                                if (testmap[x + 7][y8] != '.' && testmap[x + 7][y8] != '#') {
+                                                    throw new Exception("Incorrect foodblob adjacency at: " + (x + 8) + "," + (y8 + 1));
+                                                }
+                                            }
+
+                                            foodblobcount++;
+
+                                        } else {
+                                            throw new Exception("Incorrectly formatted foodblob at: " + (x + 1) + "," + (y + 1));
+                                        }
+
+                                    } else {
+                                        throw new Exception("Incorrectly formatted foodblob at: " + (x + 1) + "," + (y + 1));
+                                    }
+
+                                } //left slant
+                                else if (testmap[x][y + 2] == '5') {
+                                    if (((x + 5) < SIZE_X - 2) && ((y + 5) < SIZE_Y - 2) && ((x - 3) > 0)) {
+
+                                        for (int y1 = y + 1; y1 < y + 3; y1++) {
+                                            for (int x1 = x - 1; x1 < x + 4; x1++) {
+
+                                                if (testmap[x1][y1] != '5') {
+                                                    throw new Exception("Incorrectly formatted foodblob at: " + (x1 + 1) + "," + (y1 + 1));
+                                                }
+                                                skipfood[x1][y1] = true;
+                                            }
+                                        }
+
+                                        for (int y2 = y + 3; y2 < y + 5; y2++) {
+                                            for (int x2 = x - 2; x2 < x + 3; x2++) {
+
+                                                if (testmap[x2][y2] != '5') {
+                                                    throw new Exception("Incorrectly formatted foodblob at: " + (x2 + 1) + "," + (y2 + 1));
+                                                }
+                                                skipfood[x2][y2] = true;
+                                            }
+                                        }
+
+                                        for (int x3 = x; x3 < x + 5; x3++) {
+
+                                            if (testmap[x3][y] != '5') {
+                                                throw new Exception("Incorrectly formatted foodblob at: " + (x3 + 1) + "," + (y + 1));
+                                            }
+                                            skipfood[x3][y] = true;
+                                        }
+
+                                        //adjacency
+                                        if (((x + 7) < SIZE_X - 2) && ((y + 5) < SIZE_Y - 2) && ((x - 1) > 0) && ((y - 1) > 0)) {
+
+                                            for (int x4 = x - 1; x4 < x + 6; x4++) {
+                                                if (testmap[x4][y - 1] != '.' && testmap[x4][y - 1] != '#') {
+                                                    throw new Exception("Incorrect foodblob adjacency at: " + (x4 + 1) + "," + y);
+                                                }
+                                            }
+
+                                            for (int x5 = x - 3; x5 < x + 4; x5++) {
+                                                if (testmap[x5][y + 5] != '.' && testmap[x5][y + 5] != '#') {
+                                                    throw new Exception("Incorrect foodblob adjacency at: " + (x5 + 1) + "," + (y + 6));
+                                                }
+                                            }
+
+                                            for (int y4 = y; y4 < y + 3; y4++) {
+                                                if (testmap[x - 2][y4] != '.' && testmap[x - 2][y4] != '#') {
+                                                    throw new Exception("Incorrect foodblob adjacency at: " + (x - 1) + "," + (y4 + 1));
+                                                }
+                                            }
+
+                                            for (int y5 = y + 2; y5 < y + 5; y5++) {
+                                                if (testmap[x - 3][y5] != '.' && testmap[x - 3][y5] != '#') {
+                                                    throw new Exception("Incorrect foodblob adjacency at: " + (x - 2) + "," + (y5 + 1));
+                                                }
+                                            }
+
+                                            if (testmap[x - 1][y] != '.' && testmap[x - 1][y] != '#') {
+                                                throw new Exception("Incorrect foodblob adjacency at: " + (x) + "," + (y + 1));
+                                            }
+
+                                            for (int y6 = y; y6 < y + 2; y6++) {
+                                                if (testmap[x + 5][y6] != '.' && testmap[x + 5][y6] != '#') {
+                                                    throw new Exception("Incorrect foodblob adjacency at: " + (x + 6) + "," + (y6 + 1));
+                                                }
+                                            }
+
+                                            for (int y7 = y + 1; y7 < y + 4; y7++) {
+                                                if (testmap[x + 4][y7] != '.' && testmap[x + 4][y7] != '#') {
+                                                    throw new Exception("Incorrect foodblob adjacency at: " + (x + 5) + "," + (y7 + 1));
+                                                }
+                                            }
+
+                                            for (int y8 = y + 3; y8 < y + 5; y8++) {
+                                                if (testmap[x + 3][y8] != '.' && testmap[x + 3][y8] != '#') {
+                                                    throw new Exception("Incorrect foodblob adjacency at: " + (x + 4) + "," + (y8 + 1));
+                                                }
+                                            }
+
+                                            foodblobcount++;
+
+                                        } else {
+                                            throw new Exception("Incorrectly formatted foodblob at: " + (x + 1) + "," + (y + 1));
+                                        }
+
+                                    } else {
+                                        throw new Exception("Incorrectly formatted foodblob at: " + (x + 1) + "," + (y + 1));
+                                    }
+
+                                } else {
+                                    throw new Exception("Incorrectly formatted foodblob at: " + (x + 1) + "," + (y + 1));
+                                }
+                            } else {
+                                throw new Exception("Incorrectly formatted foodblob at: " + (x + 1) + "," + (y + 1));
+                            }
+                        } else {
+                            //odd blobs
+                            if (((y + 2) < SIZE_Y - 2)) {
+                                //right slant
+                                if (testmap[x][y + 2] == '.') {
+                                    if (((x + 6) < SIZE_X - 2) && ((y + 5) < SIZE_Y - 2) && ((x - 1) > 0)) {
+
+                                        for (int y1 = y + 1; y1 < y + 3; y1++) {
+                                            for (int x1 = x + 1; x1 < x + 6; x1++) {
+
+                                                if (testmap[x1][y1] != '5') {
+                                                    throw new Exception("Incorrectly formatted foodblob at: " + (x1 + 1) + "," + (y1 + 1));
+                                                }
+                                                skipfood[x1][y1] = true;
+                                            }
+                                        }
+
+                                        for (int y2 = y + 3; y2 < y + 5; y2++) {
+                                            for (int x2 = x + 2; x2 < x + 7; x2++) {
+                                                if (testmap[x2][y2] != '5') {
+                                                    throw new Exception("Incorrectly formatted foodblob at: " + (x2 + 1) + "," + (y2 + 1));
+                                                }
+                                                skipfood[x2][y2] = true;
+                                            }
+                                        }
+
+                                        for (int x3 = x; x3 < x + 5; x3++) {
+
+                                            if (testmap[x3][y] != '5') {
+                                                throw new Exception("Incorrectly formatted foodblob at: " + (x3 + 1) + "," + (y + 1));
+                                            }
+                                            skipfood[x3][y] = true;
+                                        }
+
+                                        //adjacency
+                                        if (((x + 7) < SIZE_X - 2) && ((y + 5) < SIZE_Y - 2) && ((x - 1) > 0) && ((y - 1) > 0)) {
+
+                                            for (int x4 = x - 1; x4 < x + 6; x4++) {
+                                                if (testmap[x4][y - 1] != '.' && testmap[x4][y - 1] != '#') {
+                                                    throw new Exception("Incorrect foodblob adjacency at: " + (x4 + 1) + "," + y);
+                                                }
+                                            }
+
+                                            for (int x5 = x + 1; x5 < x + 7; x5++) {
+                                                if (testmap[x5][y + 5] != '.' && testmap[x5][y + 5] != '#') {
+                                                    throw new Exception("Incorrect foodblob adjacency at: " + (x5 + 1) + "," + (y + 6));
+                                                }
+                                            }
+
+                                            for (int y4 = y; y4 < y + 2; y4++) {
+                                                if (testmap[x - 1][y4] != '.' && testmap[x - 1][y4] != '#') {
+                                                    throw new Exception("Incorrect foodblob adjacency at: " + x + "," + (y4 + 1));
+                                                }
+                                            }
+
+                                            for (int y5 = y + 1; y5 < y + 4; y5++) {
+                                                if (testmap[x][y5] != '.' && testmap[x][y5] != '#') {
+                                                    throw new Exception("Incorrect foodblob adjacency at: " + (x + 1) + "," + (y5 + 1));
+                                                }
+                                            }
+
+                                            if (testmap[x + 5][y] != '.' && testmap[x + 5][y] != '#') {
+                                                throw new Exception("Incorrect foodblob adjacency at: " + (x + 6) + "," + (y + 1));
+                                            }
+
+                                            for (int y6 = y; y6 < y + 3; y6++) {
+                                                if (testmap[x + 6][y6] != '.' && testmap[x + 6][y6] != '#') {
+                                                    throw new Exception("Incorrect foodblob adjacency at: " + (x + 7) + "," + (y6 + 1));
+                                                }
+                                            }
+
+                                            for (int y7 = y + 2; y7 < y + 5; y7++) {
+                                                if (testmap[x + 7][y7] != '.' && testmap[x + 7][y7] != '#') {
+                                                    throw new Exception("Incorrect foodblob adjacency at: " + (x + 8) + "," + (y7 + 1));
+                                                }
+                                            }
+
+                                            for (int y8 = y + 3; y8 < y + 5; y8++) {
+                                                if (testmap[x + 1][y8] != '.' && testmap[x + 1][y8] != '#') {
+                                                    throw new Exception("Incorrect foodblob adjacency at: " + (x + 2) + "," + (y8 + 1));
+                                                }
+                                            }
+
+                                            foodblobcount++;
+
+                                        } else {
+                                            throw new Exception("Incorrectly formatted foodblob at: " + (x + 1) + "," + (y + 1));
+                                        }
+
+                                    } else {
+                                        throw new Exception("Incorrectly formatted foodblob at: " + (x + 1) + "," + (y + 1));
+                                    }
+
+                                } //left slant
+                                else if (testmap[x][y + 2] == '5') {
+                                    if (((x + 5) < SIZE_X - 2) && ((y + 5) < SIZE_Y - 2) && ((x - 3) > 0)) {
+
+                                        for (int y1 = y; y1 < y + 2; y1++) {
+                                            for (int x1 = x; x1 < x + 5; x1++) {
+
+                                                if (testmap[x1][y1] != '5') {
+                                                    throw new Exception("Incorrectly formatted foodblob at: " + (x1 + 1) + "," + (y1 + 1));
+                                                }
+                                                skipfood[x1][y1] = true;
+                                            }
+                                        }
+
+                                        for (int y2 = y + 2; y2 < y + 4; y2++) {
+                                            for (int x2 = x - 1; x2 < x + 4; x2++) {
+
+                                                if (testmap[x2][y2] != '5') {
+                                                    throw new Exception("Incorrectly formatted foodblob at: " + (x2 + 1) + "," + (y2 + 1));
+                                                }
+                                                skipfood[x2][y2] = true;
+                                            }
+                                        }
+
+                                        for (int x3 = x - 2; x3 < x + 3; x3++) {
+
+                                            if (testmap[x3][y + 4] != '5') {
+                                                throw new Exception("Incorrectly formatted foodblob at: " + (x3 + 1) + "," + (y + 5));
+                                            }
+                                            skipfood[x3][y + 4] = true;
+                                        }
+
+                                        //adjacency
+                                        if (((x + 7) < SIZE_X - 2) && ((y + 5) < SIZE_Y - 2) && ((x - 1) > 0) && ((y - 1) > 0)) {
+
+                                            for (int x4 = x - 1; x4 < x + 6; x4++) {
+                                                if (testmap[x4][y - 1] != '.' && testmap[x4][y - 1] != '#') {
+                                                    throw new Exception("Incorrect foodblob adjacency at: " + (x4 + 1) + "," + y);
+                                                }
+                                            }
+
+                                            for (int x5 = x - 3; x5 < x + 4; x5++) {
+                                                if (testmap[x5][y + 5] != '.' && testmap[x5][y + 5] != '#') {
+                                                    throw new Exception("Incorrect foodblob adjacency at: " + (x5 + 1) + "," + (y + 6));
+                                                }
+                                            }
+
+                                            for (int y4 = y; y4 < y + 2; y4++) {
+                                                if (testmap[x - 1][y4] != '.' && testmap[x - 1][y4] != '#') {
+                                                    throw new Exception("Incorrect foodblob adjacency at: " + (x) + "," + (y4 + 1));
+                                                }
+                                            }
+
+                                            for (int y5 = y + 1; y5 < y + 4; y5++) {
+                                                if (testmap[x - 2][y5] != '.' && testmap[x - 2][y5] != '#') {
+                                                    throw new Exception("Incorrect foodblob adjacency at: " + (x - 1) + "," + (y5 + 1));
+                                                }
+                                            }
+
+                                            if (testmap[x + 3][y + 4] != '.' && testmap[x + 3][y + 4] != '#') {
+                                                throw new Exception("Incorrect foodblob adjacency at: " + (x + 4) + "," + (y + 5));
+                                            }
+
+                                            for (int y6 = y + 3; y6 < y + 5; y6++) {
+                                                if (testmap[x - 3][y6] != '.' && testmap[x - 3][y6] != '#') {
+                                                    throw new Exception("Incorrect foodblob adjacency at: " + (x - 2) + "," + (y6 + 1));
+                                                }
+                                            }
+
+                                            for (int y7 = y; y7 < y + 3; y7++) {
+                                                if (testmap[x + 5][y7] != '.' && testmap[x + 5][y7] != '#') {
+                                                    throw new Exception("Incorrect foodblob adjacency at: " + (x + 6) + "," + (y7 + 1));
+                                                }
+                                            }
+
+                                            for (int y8 = y + 2; y8 < y + 5; y8++) {
+                                                if (testmap[x + 4][y8] != '.' && testmap[x + 4][y8] != '#') {
+                                                    throw new Exception("Incorrect foodblob adjacency at: " + (x + 5) + "," + (y8 + 1));
+                                                }
+                                            }
+
+                                            foodblobcount++;
+
+                                        } else {
+                                            throw new Exception("Incorrectly formatted foodblob at: " + (x + 1) + "," + (y + 1));
+                                        }
+
+                                    } else {
+                                        throw new Exception("Incorrectly formatted foodblob at: " + (x + 1) + "," + (y + 1));
+                                    }
+
+                                } else {
+                                    throw new Exception("Incorrectly formatted foodblob at: " + (x + 1) + "," + (y + 1));
+                                }
+                            } else {
+                                throw new Exception("Incorrectly formatted foodblob at: " + (x + 1) + "," + (y + 1));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        if (foodblobcount < 11) {
+            throw new Exception("Not enough foodblobs in world. 11 Required.");
+        }
+
+        if (foodblobcount > 11) {
+            throw new Exception("Too many foodblobs in world. 11 Required.");
+        }
+
+        //anthills
+        int hillcount = 0;
+
+        //skipping in blob cells already considered
+        boolean[][] skiphill = new boolean[SIZE_X][SIZE_Y];
+        for (int y = 0; y < SIZE_Y; y++) {
+            for (int x = 0; x < SIZE_X; x++) {
+                skiphill[x][y] = false;
+            }
+        }
+
+        for (int y = 0; y < SIZE_Y; y++) {
+            for (int x = 0; x < SIZE_X; x++) {
+                if (testmap[x][y] == '+' || testmap[x][y] == '-') {
+                    //desired character, + or -
+                    char hillchar = testmap[x][y];
+                    if (!skiphill[x][y]) {
+                        if (y % 2 == 0) {
+                            //even hill
+                            //domain
+                            if (((x - 4) > 0) && ((y - 1) > 0) && ((x + 10) < SIZE_X - 2) && ((y + 13) < SIZE_Y - 2)) {
+                                //checking the hill cells
+
+                                for (int y1 = y; y1 < y + 13; y1++) {
+                                    for (int x1 = x; x1 < x + 7; x1++) {
+                                        if (testmap[x1][y1] != hillchar) {
+                                            throw new Exception("Incorrectly formatted anthill at: " + (x1 + 1) + "," + (y1 + 1));
+                                        }
+                                        skiphill[x1][y1] = true;
+                                    }
+                                }
+
+                                for (int y2 = y + 5; y2 < y + 8; y2++) {
+                                    if (testmap[x - 3][y2] != hillchar) {
+                                        throw new Exception("Incorrectly formatted anthill at: " + (x - 2) + "," + (y2 + 1));
+                                    }
+                                    skiphill[x - 3][y2] = true;
+                                }
+
+                                for (int y3 = y + 3; y3 < y + 10; y3++) {
+                                    if (testmap[x - 2][y3] != hillchar) {
+                                        throw new Exception("Incorrectly formatted anthill at: " + (x - 1) + "," + (y3 + 1));
+                                    }
+                                    skiphill[x - 2][y3] = true;
+                                }
+
+                                for (int y4 = y + 1; y4 < y + 12; y4++) {
+                                    if (testmap[x - 1][y4] != hillchar) {
+                                        throw new Exception("Incorrectly formatted anthill at: " + (x) + "," + (y4 + 1));
+                                    }
+                                    skiphill[x - 1][y4] = true;
+                                }
+
+                                for (int y5 = y + 2; y5 < y + 11; y5++) {
+                                    if (testmap[x + 7][y5] != hillchar) {
+                                        throw new Exception("Incorrectly formatted anthill at: " + (x + 8) + "," + (y5 + 1));
+                                    }
+                                    skiphill[x + 7][y5] = true;
+                                }
+
+                                for (int y6 = y + 4; y6 < y + 9; y6++) {
+                                    if (testmap[x + 8][y6] != hillchar) {
+                                        throw new Exception("Incorrectly formatted anthill at: " + (x + 9) + "," + (y6 + 1));
+                                    }
+                                    skiphill[x + 8][y6] = true;
+                                }
+
+                                if (testmap[x + 9][y + 6] != hillchar) {
+                                    throw new Exception("Incorrectly formatted anthill at: " + (x + 10) + "," + (y + 7));
+                                }
+                                skiphill[x + 9][y + 6] = true;
+
+                                //checking adjacency
+                                for (int x2 = x - 1; x2 < x + 8; x2++) {
+                                    if (testmap[x2][y - 1] != '.' && testmap[x2][y - 1] != '#') {
+                                        throw new Exception("Incorrect anthill adjacency at: " + (x2 + 1) + "," + y);
+                                    }
+                                }
+
+                                for (int x3 = x - 1; x3 < x + 8; x3++) {
+                                    if (testmap[x3][y + 13] != '.' && testmap[x3][y + 13] != '#') {
+                                        throw new Exception("Incorrect anthill adjacency at: " + (x3 + 1) + "," + (y + 14));
+                                    }
+                                }
+
+                                for (int y7 = y + 4; y7 < y + 9; y7++) {
+                                    if (testmap[x - 4][y7] != '.' && testmap[x - 4][y7] != '#') {
+                                        throw new Exception("Incorrect anthill adjacency at: " + (x - 3) + "," + (y7 + 1));
+                                    }
+                                }
+
+                                for (int y8 = y + 2; y8 < y + 5; y8++) {
+                                    if (testmap[x - 3][y8] != '.' && testmap[x - 3][y8] != '#') {
+                                        throw new Exception("Incorrect anthill adjacency at: " + (x - 2) + "," + (y8 + 1));
+                                    }
+                                }
+
+                                for (int y9 = y + 8; y9 < y + 11; y9++) {
+                                    if (testmap[x - 3][y9] != '.' && testmap[x - 3][y9] != '#') {
+                                        throw new Exception("Incorrect anthill adjacency at: " + (x - 2) + "," + (y9 + 1));
+                                    }
+                                }
+
+                                for (int y10 = y; y10 < y + 3; y10++) {
+                                    if (testmap[x - 2][y10] != '.' && testmap[x - 2][y10] != '#') {
+                                        throw new Exception("Incorrect anthill adjacency at: " + (x - 1) + "," + (y10 + 1));
+                                    }
+                                }
+
+                                for (int y11 = y + 10; y11 < y + 13; y11++) {
+                                    if (testmap[x - 2][y11] != '.' && testmap[x - 2][y11] != '#') {
+                                        throw new Exception("Incorrect anthill adjacency at: " + (x - 1) + "," + (y11 + 1));
+                                    }
+                                }
+
+                                if (testmap[x - 1][y] != '.' && testmap[x - 1][y] != '#') {
+                                    throw new Exception("Incorrect anthill adjacency at: " + (x) + "," + (y + 1));
+                                }
+
+                                if (testmap[x - 1][y + 12] != '.' && testmap[x - 1][y + 12] != '#') {
+                                    throw new Exception("Incorrect anthill adjacency at: " + (x) + "," + (y + 13));
+                                }
+
+                                for (int y12 = y; y12 < y + 2; y12++) {
+                                    if (testmap[x + 7][y12] != '.' && testmap[x + 7][y12] != '#') {
+                                        throw new Exception("Incorrect anthill adjacency at: " + (x + 8) + "," + (y12 + 1));
+                                    }
+                                }
+
+                                for (int y13 = y + 11; y13 < y + 13; y13++) {
+                                    if (testmap[x + 7][y13] != '.' && testmap[x + 7][y13] != '#') {
+                                        throw new Exception("Incorrect anthill adjacency at: " + (x + 8) + "," + (y13 + 1));
+                                    }
+                                }
+
+                                for (int y14 = y + 1; y14 < y + 4; y14++) {
+                                    if (testmap[x + 8][y14] != '.' && testmap[x + 8][y14] != '#') {
+                                        throw new Exception("Incorrect anthill adjacency at: " + (x + 9) + "," + (y14 + 1));
+                                    }
+                                }
+
+                                for (int y15 = y + 9; y15 < y + 12; y15++) {
+                                    if (testmap[x + 8][y15] != '.' && testmap[x + 8][y15] != '#') {
+                                        throw new Exception("Incorrect anthill adjacency at: " + (x + 9) + "," + (y15 + 1));
+                                    }
+                                }
+
+                                for (int y16 = y + 3; y16 < y + 6; y16++) {
+                                    if (testmap[x + 9][y16] != '.' && testmap[x + 9][y16] != '#') {
+                                        throw new Exception("Incorrect anthill adjacency at: " + (x + 10) + "," + (y16 + 1));
+                                    }
+                                }
+
+                                for (int y17 = y + 7; y17 < y + 10; y17++) {
+                                    if (testmap[x + 9][y17] != '.' && testmap[x + 9][y17] != '#') {
+                                        throw new Exception("Incorrect anthill adjacency at: " + (x + 10) + "," + (y17 + 1));
+                                    }
+                                }
+
+                                for (int y18 = y + 5; y18 < y + 8; y18++) {
+                                    if (testmap[x + 10][y18] != '.' && testmap[x + 10][y18] != '#') {
+                                        throw new Exception("Incorrect anthill adjacency at: " + (x + 11) + "," + (y18 + 1));
+                                    }
+                                }
+
+                            } else {
+                                throw new Exception("Incorrectly formed anthill at: " + (x + 1) + "," + (y + 1));
+                            }
+
+                            //incrementing hillcount
+                            hillcount++;
+
+                        } else {
+                            //odd hill
+                            //domain
+                            if (((x - 4) > 0) && ((y - 1) > 0) && ((x + 10) < SIZE_X - 2) && ((y + 13) < SIZE_Y - 2)) {
+                                //checking the hill cells
+
+                                for (int y1 = y; y1 < y + 13; y1++) {
+                                    for (int x1 = x; x1 < x + 7; x1++) {
+                                        if (testmap[x1][y1] != hillchar) {
+                                            throw new Exception("Incorrectly formatted anthill at: " + (x1 + 1) + "," + (y1 + 1));
+                                        }
+                                        skiphill[x1][y1] = true;
+                                    }
+                                }
+
+                                for (int y2 = y + 5; y2 < y + 8; y2++) {
+                                    if (testmap[x + 9][y2] != hillchar) {
+                                        throw new Exception("Incorrectly formatted anthill at: " + (x + 10) + "," + (y2 + 1));
+                                    }
+                                    skiphill[x + 9][y2] = true;
+                                }
+
+                                for (int y3 = y + 3; y3 < y + 10; y3++) {
+                                    if (testmap[x + 8][y3] != hillchar) {
+                                        throw new Exception("Incorrectly formatted anthill at: " + (x + 9) + "," + (y3 + 1));
+                                    }
+                                    skiphill[x + 8][y3] = true;
+                                }
+
+                                for (int y4 = y + 1; y4 < y + 12; y4++) {
+                                    if (testmap[x + 7][y4] != hillchar) {
+                                        throw new Exception("Incorrectly formatted anthill at: " + (x + 8) + "," + (y4 + 1));
+                                    }
+                                    skiphill[x + 7][y4] = true;
+                                }
+
+                                for (int y5 = y + 2; y5 < y + 11; y5++) {
+                                    if (testmap[x - 1][y5] != hillchar) {
+                                        throw new Exception("Incorrectly formatted anthill at: " + (x) + "," + (y5 + 1));
+                                    }
+                                    skiphill[x - 1][y5] = true;
+                                }
+
+                                for (int y6 = y + 4; y6 < y + 9; y6++) {
+                                    if (testmap[x - 2][y6] != hillchar) {
+                                        throw new Exception("Incorrectly formatted anthill at: " + (x - 1) + "," + (y6 + 1));
+                                    }
+                                    skiphill[x - 2][y6] = true;
+                                }
+
+                                if (testmap[x - 3][y + 6] != hillchar) {
+                                    throw new Exception("Incorrectly formatted anthill at: " + (x - 2) + "," + (y + 7));
+                                }
+                                skiphill[x - 3][y + 6] = true;
+
+                                //checking adjacency
+                                for (int x2 = x - 1; x2 < x + 8; x2++) {
+                                    if (testmap[x2][y - 1] != '.' && testmap[x2][y - 1] != '#') {
+                                        throw new Exception("Incorrect anthill adjacency at: " + (x2 + 1) + "," + y);
+                                    }
+                                }
+
+                                for (int x3 = x - 1; x3 < x + 8; x3++) {
+                                    if (testmap[x3][y + 13] != '.' && testmap[x3][y + 13] != '#') {
+                                        throw new Exception("Incorrect anthill adjacency at: " + (x3 + 1) + "," + (y + 14));
+                                    }
+                                }
+
+                                for (int y7 = y + 4; y7 < y + 9; y7++) {
+                                    if (testmap[x + 10][y7] != '.' && testmap[x + 10][y7] != '#') {
+                                        throw new Exception("Incorrect anthill adjacency at: " + (x + 11) + "," + (y7 + 1));
+                                    }
+                                }
+
+                                for (int y8 = y + 2; y8 < y + 5; y8++) {
+                                    if (testmap[x + 9][y8] != '.' && testmap[x + 9][y8] != '#') {
+                                        throw new Exception("Incorrect anthill adjacency at: " + (x + 10) + "," + (y8 + 1));
+                                    }
+                                }
+
+                                for (int y9 = y + 8; y9 < y + 11; y9++) {
+                                    if (testmap[x + 9][y9] != '.' && testmap[x + 9][y9] != '#') {
+                                        throw new Exception("Incorrect anthill adjacency at: " + (x + 10) + "," + (y9 + 1));
+                                    }
+                                }
+
+                                for (int y10 = y; y10 < y + 3; y10++) {
+                                    if (testmap[x + 8][y10] != '.' && testmap[x + 8][y10] != '#') {
+                                        throw new Exception("Incorrect anthill adjacency at: " + (x + 9) + "," + (y10 + 1));
+                                    }
+                                }
+
+                                for (int y11 = y + 10; y11 < y + 13; y11++) {
+                                    if (testmap[x + 8][y11] != '.' && testmap[x + 8][y11] != '#') {
+                                        throw new Exception("Incorrect anthill adjacency at: " + (x + 9) + "," + (y11 + 1));
+                                    }
+                                }
+
+                                if (testmap[x + 7][y] != '.' && testmap[x + 7][y] != '#') {
+                                    throw new Exception("Incorrect anthill adjacency at: " + (x + 8) + "," + (y + 1));
+                                }
+
+                                if (testmap[x + 7][y + 12] != '.' && testmap[x + 7][y + 12] != '#') {
+                                    throw new Exception("Incorrect anthill adjacency at: " + (x + 8) + "," + (y + 13));
+                                }
+
+                                for (int y12 = y; y12 < y + 2; y12++) {
+                                    if (testmap[x - 1][y12] != '.' && testmap[x - 1][y12] != '#') {
+                                        throw new Exception("Incorrect anthill adjacency at: " + (x) + "," + (y12 + 1));
+                                    }
+                                }
+
+                                for (int y13 = y + 11; y13 < y + 13; y13++) {
+                                    if (testmap[x - 1][y13] != '.' && testmap[x - 1][y13] != '#') {
+                                        throw new Exception("Incorrect anthill adjacency at: " + (x) + "," + (y13 + 1));
+                                    }
+                                }
+
+                                for (int y14 = y + 1; y14 < y + 4; y14++) {
+                                    if (testmap[x - 2][y14] != '.' && testmap[x - 2][y14] != '#') {
+                                        throw new Exception("Incorrect anthill adjacency at: " + (x - 1) + "," + (y14 + 1));
+                                    }
+                                }
+
+                                for (int y15 = y + 9; y15 < y + 12; y15++) {
+                                    if (testmap[x - 2][y15] != '.' && testmap[x - 2][y15] != '#') {
+                                        throw new Exception("Incorrect anthill adjacency at: " + (x - 1) + "," + (y15 + 1));
+                                    }
+                                }
+
+                                for (int y16 = y + 3; y16 < y + 6; y16++) {
+                                    if (testmap[x - 3][y16] != '.' && testmap[x - 3][y16] != '#') {
+                                        throw new Exception("Incorrect anthill adjacency at: " + (x - 2) + "," + (y16 + 1));
+                                    }
+                                }
+
+                                for (int y17 = y + 7; y17 < y + 10; y17++) {
+                                    if (testmap[x - 3][y17] != '.' && testmap[x - 3][y17] != '#') {
+                                        throw new Exception("Incorrect anthill adjacency at: " + (x - 2) + "," + (y17 + 1));
+                                    }
+                                }
+
+                                for (int y18 = y + 5; y18 < y + 8; y18++) {
+                                    if (testmap[x - 4][y18] != '.' && testmap[x - 4][y18] != '#') {
+                                        throw new Exception("Incorrect anthill adjacency at: " + (x - 3) + "," + (y18 + 1));
+                                    }
+                                }
+
+                            } else {
+                                throw new Exception("Incorrectly formed anthill at: " + (x + 1) + "," + (y + 1));
+                            }
+
+                            //incrementing hillcount
+                            hillcount++;
+                        }
+                    }
+                }
+            }
+        }
+
+        if (hillcount < 2) {
+            throw new Exception("Not enough anthills in world. 2 Required.");
+        }
+
+        if (hillcount > 2) {
+            throw new Exception("Too many anthills in world. 2 Required.");
+        }
+
+        //complete message
+        System.out.println("All tests passed.");
+
         //read in each cell as string then space
         FileReader fr = new FileReader(worldPath);
         BufferedReader textReader = new BufferedReader(fr);
