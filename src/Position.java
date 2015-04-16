@@ -1,8 +1,4 @@
 /**
- * This class represents a coordinate in 2D space.
- * @author Kieran King
- */
-/** 
  * The Position class creates Position object with an x,y-coordinate pair.
  * 
  */
