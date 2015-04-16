@@ -1,6 +1,6 @@
 /**
- * This class represents a single instruction of a brain, including the action and associated parameters.
- * @author Kieran King
+ * The Instruction class generates an instruction object
+ * which contains an action and a set of parameters.
  */
 public class Instruction {
 	private Action action;
