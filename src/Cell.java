@@ -16,9 +16,9 @@ public class Cell {
     private boolean occupied = false;
 
     /**
-     * Construct this cell.
+     * Constructs a cell with the given position.
      *
-     * @param the position of this cell relative to other cells in the world
+     * @param position The position of this cell relative to other cells in the world
      */
     public Cell(Position position) {
         this.position = position;
@@ -26,16 +26,16 @@ public class Cell {
     }
 
     /**
-     * Get the position of this cell.
+     * Gets the position of the cell.
      *
-     * @return position of this cell
+     * @return Returns the position of the cell.
      */
     public Position getPosition() {
         return position;
     }
 
     /**
-     * Set the number of food particles contained in this cell.
+     * Sets the number of food particles to be contained in the cell.
      *
      * @param number of food particles
      */
@@ -45,7 +45,7 @@ public class Cell {
     }
 
     /**
-     * Get the number of food particles contained in this cell.
+     * Get the number of food particles contained in the cell.
      *
      * @return number of food particles
      */
@@ -55,11 +55,11 @@ public class Cell {
     }
 
     /**
-     * Set the state of a chemical marker in this cell.
+     * Set the state of a chemical marker in the cell.
      *
-     * @param the player
-     * @param the chemical (from 0 to 5)
-     * @param the state of the specified chemical marker
+     * @param player The player whose chemical marker is to be set.
+     * @param chemical The chemical marker to be set in this cell.
+     * @param marked The state of the specified chemical marker.
      */
     public void setMarker(Player player, int chemical, boolean marked) {
         chemicalMarkers[player.getId()][chemical] = marked;
@@ -68,25 +68,25 @@ public class Cell {
     /**
      * Get the state of a chemical marker in this cell.
      *
-     * @param the player
-     * @param the specific chemical (from 0 to 5)
-     * @return the state of the specified chemical marker
+     * @param player The player whose chemical marker is to be retrieved.
+     * @param chemical The chemical marker to be retrieved.
+     * @return Returns the state of the specified chemical marker.
      */
     public boolean getMarker(Player player, int chemical) {
         return chemicalMarkers[player.getId()][chemical];
     }
 
     /**
-     * Set the rocky state of this cell.
+     * Sets whether the cell is rocky or not, true if rocky, else false.
      *
-     * @param true for rocky, false for clear
+     * @param rocky True if the cell is rocky, else false.
      */
     public void setRocky(boolean rocky) {
         this.rocky = rocky;
     }
 
     /**
-     * Get the rocky state of this cell.
+     * Gets whether or not the cell is rocky, true if rocky, else false.
      *
      * @return true for rocky, false for clear
      */
@@ -95,40 +95,37 @@ public class Cell {
     }
 
     /**
-     * Set the ant that is located in this cell.
+     * Sets an ant on the cell.
      *
-     * @param the ant that is located in this cell, or null if an ant is not
-     * located in this cell
+     * @param ant The ant to be set on the cell.
+     *
      */
     public void setAnt(Ant ant) {
         antOnCell = ant;
     }
 
     /**
-     * Get the ant that is located in this cell.
+     * Get the ant on the cell, if null, no ant is located on the cell.
      *
-     * @return the ant that is located in this cell, or null if an ant is not
-     * located in this cell
+     * @return Returns null if no ant is on the cell, otherwise returns the ant.
      */
     public Ant getAnt() {
         return antOnCell;
     }
 
     /**
-     * Set the anthill status of this cell.
+     * Sets the anthill status of this cell.
      *
-     * @param the player who owns the anthill located in this cell, or null if
-     * this cell is not part of an anthill
+     * @param player The player who owns the anthill located in this cell, or null if this cell is not part of an anthill
      */
     public void setAnthill(Player player) {
         anthill = player;
     }
 
     /**
-     * Get the anthill status of this cell.
+     * Gets the anthill status of this cell.
      *
-     * @return the player who owns the anthill located in this cell, or null if
-     * this cell is not part of an anthill
+     * @return Returns the player who owns the anthill located in this cell, or null if this cell is not part of an anthill.
      */
     public Player getAnthill() {
         return anthill;

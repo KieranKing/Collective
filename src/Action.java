@@ -1,6 +1,5 @@
 /**
- * This enum defines all the available actions for an ant.
- * @author Kieran King
+ * Defines all the available actions for an ant.
  */
 public enum Action {
 	SENSE, MARK, UNMARK, PICKUP, DROP, TURN, MOVE, FLIP;

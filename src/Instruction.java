@@ -7,9 +7,9 @@ public class Instruction {
 	private int[] parameters;
 	
 	/**
-	 * Construct an instruction.
-	 * @param the action
-	 * @param the parameters associated with the action
+	 * Constructs an instruction.
+	 * @param action The action the ant is to perform.
+	 * @param parameters The parameters associated with the action the ant is to perform.
 	 */
 	Instruction(Action action, int[] parameters) throws Exception {		
 		switch (action) {
@@ -77,7 +77,7 @@ public class Instruction {
 	}
 	
 	/**
-	 * Get the action associated with this instruction.
+	 * Gets the action associated with the instruction.
 	 * @return the action associated with this instruction
 	 */
 	public Action getAction() {
@@ -85,7 +85,7 @@ public class Instruction {
 	}
 	
 	/**
-	 * Get the parameters associated with this instruction.
+	 * Gets the parameters associated with the instruction.
 	 * @return the parameters associated with this instruction
 	 */
 	public int[] getParameters() {
