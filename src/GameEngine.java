@@ -14,13 +14,6 @@ public class GameEngine {
 	 * Constructer.
 	 */
 	GameEngine() {
-		//world = new World(mapPath);
-		//each player plays every other player, 3 plays against 2 and 1 (2 matches) and 2 plays against 1 (1 match) => (n-1)! matches.
-		//1 world.
-		// for each pair of players
-		//{
-		//	world.add(p1, p2, mapPath)
-		//}
 	}
 
 	/** Kieran
@@ -29,68 +22,89 @@ public class GameEngine {
 	 * @param the black player
 	 * @return the file path of the processed match
 	 */
-	/** Ralph
-	 * Runs a match between two palyers, player1 and player2.
-	 * @param player1 Player 1, representing the first player.
-	 * @param player2 Player 2, representing the second player.
-	 */
 	public String processMatch(Player playerA, Player playerB) {
 		World[] simulationResult;
-		World matchWorld = new World(playerA, playerB);
-		for(int round = 0; round < 300000; round++;){
-			for(/* getAnt method from the world class which doesn't exist yet*/){ // cause there's no getAnt, you can't for through them. of if you can think of workaround - do it :}
-				Ant ant = new Ant();
-				Instruction instruction = ant.getPlayer().getNextInstruction(ant.getState());
-
-				if(instruction.getAction() == Action.MARK){
-					ant.getCell().setMarker(ant.getPlayer(), instruction.getParameters()[0], true);
-
+		World matchWorld = new World(new Player[] {playerA, playerB});
+		Ant[] ants = matchWorld.getAnts();
+		// Loop through rounds.
+		for (int round = 0; round < 300000; round++) {
+			// Loop through ants.
+			for (int a = 0; a<ants.length; a++){
+				Instruction instruction = ants[a].getPlayer().getNextInstruction(ant.getState());
+				
+				switch (instruction.getAction()) {
+					case SENSE:
+						break;
+						
+					case MARK:
+						// Mark the cell where this ant is located.
+						ants[a].getCell().setMarker(ants[a].getPlayer(), instruction.getParameters()[0], true);
+						// Update the state for this ant.
+						ants[a].setState(instruction.getParameters()[1]);
+						break;
+						
+					case UNMARK:
+						// Unmark the cell where this ant is located.
+						ants[a].getCell().setMarker(ants[a].getPlayer(), instruction.getParameters()[0], false);
+						// Update the state for this ant.
+						ants[a].setState(instruction.getParameters()[1]);
+						break;
+						
+					case PICKUP:
+						if (ants[a].getCell().getFoodCount() > 0 && ants[a].getFood() == false) {
+							// This cell contains food and the ant is not holding food, pick up the food on this cell.
+							ants[a].getCell().setFoodCount(ants[a].getCell().getFoodCount()-1);
+							ants[a].setFood(true);
+							// Update the state for this ant.
+							ants[a].setState(instruction.getParameters()[0]);
+						} else {
+							// This cell does not contain food, update state.
+							ants[a].setState(instruction.getParameters()[1]);
+						}
+						break;
+						
+					case DROP:
+						if (ants[a].getFood()) {
+							// Drop food on the cell where the ant is located.
+							ants[a].getCell().setFoodCount(ants[a].getCell().getFoodCount()+1);
+							ants[a].setFood(false);
+						}
+						// Update the state for this ant.
+						ants[a].setState(instruction.getParameters()[0]);
+						break;
+						
+					case TURN:
+						if (instruction.getParameters()[0] == 0) {
+							// Turn left.
+							ants[a].setDirection((ants[a].getDirection()-1) % 6);
+						} else {
+							// Turn right.
+							ants[a].setDirection((ants[a].getDirection()+1) % 6);
+						}
+						// Update the state for this ant.
+						ants[a].setState(instruction.getParameters()[1]);
+						break;
+						
+					case MOVE:
+						// Move instruction
+						ants[a].setState(instruction.getParameters()[1]);
+						break;
+						
+					case FLIP:
+						// Flip instruction
+						ants[a].setState(instruction.getParameters()[1]);
+						break;
+						
+					default:
+						break;
 				}
-
-				else if(instruction.getAction() == Action.UNMARK){
-					ant.getCell().setMarker(ant.getPlayer(), instruction.getParameters()[0], false);
-				}
-
-				else if(instruction.getAction() == Action.PICKUP){
-					ant.pickFood(ant.getCell()); // is there a method pick food? :/ hope it works right -_- and that they just did not add it
-					if (ant.getFood()){
-						ant.setState(1);
-					}
-					else{
-						ant.setState(2);
-					}
-				}
-
-				else if(instruction.getAction() == Action.DROP){
-					ant.dropFood(getCell());   // also could not find the drop food function :/
-				}
-
-				else if(instruction.getAction() == Action.TURN){
-					ant.setDirection(instruction.getParameters()[0]);
-				}
-
-				else if(instruction.getAction() == Action.MOVE){
-					if (ant.getCell().isRocky()){ // if method get direction worked, it should've returned a cell in front, and it could check if it's blocked, BUT it returns direction :/ maybe it could try go formard, see if it's block and go beckwards, but that's so ishy, that i don't like it.
-						ant.moveForward();
-						ant.setState(1);
-					}
-					else{
-						ant.setState(2);
-					}
-				}
-
-				else if(instruction.getAction() == Action.FLIP){
-
-				}
-
 
 			}
 
-
-
-			simulationResult[round]=matchWorld;
+			simulationResult[round] = matchWorld;
 			// Every round and ant instruction should be processed here.
 			return "";
+			}
 		}
 
 		/** Kieran
