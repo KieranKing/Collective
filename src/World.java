@@ -1,6 +1,6 @@
 /**
- * This class represents the world of a single match.
- *
+ * The world class generates a World object, which is made up
+ * of a set of cells a set of players and a set of ants.
  * @author Ben Jackson, Kieran King
  */
 package antproject.src;
@@ -42,9 +42,10 @@ public class World {
     }
 
     /**
-     * Construct a world loaded from file.
+     * Constructs a world loaded from file.
      *
-     * @param The path to the world file to load.
+     * @param worldPath The path to the world file to load.
+     * @param players The players playing in the world.
      */
     public World(Player[] players, String worldPath) throws IOException, Exception {
         this.players = players;
@@ -55,7 +56,7 @@ public class World {
     }
 
     /**
-     * Randomly generate world.
+     * Randomly generates world.
      */
     private void generateWorld() throws Exception {
         Random rand = new Random();
@@ -768,9 +769,9 @@ public class World {
     }
 
     /**
-     * Load a world from file.
+     * Loads a world from file.
      *
-     * @param the world file to load
+     * @param worldPath The path of the world file to be loaded.
      */
     private void loadWorld(String worldPath) throws IOException, Exception {
         //load world file from path

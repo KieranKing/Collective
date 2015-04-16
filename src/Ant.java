@@ -1,14 +1,10 @@
 /**
- * This class represents a single ant.
- * @author Kieran King
+ * The Ant class creates an ant object with a unique id and a player.
+ * @author Ralph
  */
 
 package antproject.src;
 
-/**
- * The Ant class creates an ant object with a unique id and a player.
- * @author Ralph
- */
 public class Ant {
 	
 	private Player player;

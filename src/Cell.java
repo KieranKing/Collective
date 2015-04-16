@@ -1,7 +1,9 @@
 /**
- * This class represents a single cell.
+ * The Cell class creates a cell object which has a position, a food count,
+ * a set of chemical markers, whether it is rocky or not an ant, a player and
+ * whether it is occupied or not.
  *
- * @author Kieran King
+ * @author Ralph
  */
 package antproject.src;
 
@@ -37,7 +39,7 @@ public class Cell {
     /**
      * Sets the number of food particles to be contained in the cell.
      *
-     * @param number of food particles
+     * @param food The number of food particles to set.
      */
     public void setFoodCount(int food) {
         // Note: Update class diagram method name
@@ -45,9 +47,9 @@ public class Cell {
     }
 
     /**
-     * Get the number of food particles contained in the cell.
+     * Gets the number of food particles contained in the cell.
      *
-     * @return number of food particles
+     * @return Returns the number of food particles in the cell.
      */
     public int getFoodCount() {
         // Note: Update class diagram method name
@@ -55,7 +57,7 @@ public class Cell {
     }
 
     /**
-     * Set the state of a chemical marker in the cell.
+     * Sets the state of a chemical marker in the cell.
      *
      * @param player The player whose chemical marker is to be set.
      * @param chemical The chemical marker to be set in this cell.
@@ -66,7 +68,7 @@ public class Cell {
     }
 
     /**
-     * Get the state of a chemical marker in this cell.
+     * Get the state of a chemical marker in the cell.
      *
      * @param player The player whose chemical marker is to be retrieved.
      * @param chemical The chemical marker to be retrieved.
