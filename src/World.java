@@ -44,7 +44,7 @@ public class World {
     /**
      * Construct a world loaded from file.
      *
-     * @param the world file to load
+     * @param The path to the world file to load.
      */
     public World(Player[] players, String worldPath) throws IOException, Exception {
         this.players = players;
